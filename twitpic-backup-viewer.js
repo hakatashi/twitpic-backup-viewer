@@ -1,9 +1,11 @@
 var express = require('express');
-var path = require('path');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
 var jade = require('jade');
 var less = require('less-middleware');
+
+var fs = require('fs');
+var path = require('path');
 
 var app = express();
 
@@ -16,8 +18,38 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(less(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', function (req, res, next) {
+app.get('/', function (req, res, next) {
 	res.render('index', {});
+});
+
+app.param('id', function (req, res, next, id) {
+	next();
+});
+
+app.get('/:id', function (req, res, next) {
+	var id = req.params.id;
+	var jsonFile = __dirname + '/data' + path.join('/', id + '.json');
+
+	fs.readFile(jsonFile, function (error, data) {
+		if (error) {
+			var error = new Error('Not found');
+			error.status = 404;
+			return next(error);
+		}
+
+		try {
+			var info = JSON.parse(data);
+			var file = path.join('/', id + '.' + info.type).slice(1);
+
+			res.render('picture', {
+				id: req.params.id,
+				file: file,
+				info: info
+			});
+		} catch (error) {
+			return next(new Error('Error while loading ' + id));
+		}
+	});
 });
 
 // catch 404 and forward to error handler
