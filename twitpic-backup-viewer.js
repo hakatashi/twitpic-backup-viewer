@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 params.extend(app);
 
 app.param('id', /^\w+$/);
-app.param('filename', /^(\w+)\.(jpg|jpeg|png)$/)
+app.param('picturefile', /^(\w+)\.(jpg|jpeg|png)$/)
 
 app.get('/', function (req, res, next) {
 	res.render('index', {});
@@ -50,14 +50,14 @@ app.get('/:id', function (req, res, next) {
 				info: info
 			});
 		} catch (error) {
-			return next(new Error('Error while loading ' + id + '. Please report this to me...'));
+			return next(new Error('Error while loading ' + id + '. Please report this to me sorry...'));
 		}
 	});
 });
 
-app.get('/:filename', function (req, res, next) {
-	var filename = req.params.filename[0];
-	var extension = req.params.filename[2];
+app.get('/:picturefile', function (req, res, next) {
+	var filename = req.params.picturefile[0];
+	var extension = req.params.picturefile[2];
 	var dataFile = __dirname + '/data' + path.join('/', filename);
 
 	fs.readFile(dataFile, function (error, data) {

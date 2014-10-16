@@ -1,4 +1,17 @@
 doctype html
 html
+	head
+		title= info.message + ' - hakatashi\'s twitpic backup viewer'
+		link(rel='stylesheet', href='style.css', media='screen', charset='utf-8')
 	body
-		h1= info.message
+		.info
+			.user
+				p.userinfo
+					a(href='http://twitter.com/' + info.user.username, target='_blank')
+						| @#{info.user.username} (#{info.user.name})
+					|  uploaded on #{info.timestamp}
+			p= info.message
+		.workspace
+			.imagewrap
+				a(href=file, target='_blank').imagelink
+					img(src=file, width=info.width, height=info.height).image
