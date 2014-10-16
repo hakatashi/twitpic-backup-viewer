@@ -3,6 +3,7 @@ var favicon = require('serve-favicon');
 var morgan = require('morgan');
 var jade = require('jade');
 var less = require('less-middleware');
+var params = require('express-params');
 
 var fs = require('fs');
 var path = require('path');
@@ -18,12 +19,14 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(less(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// enable extensive parameter parsings
+params.extend(app);
+
+app.param('id', /^\w+$/);
+app.param('filename', /^(\w+)\.(jpg|jpeg|png)$/)
+
 app.get('/', function (req, res, next) {
 	res.render('index', {});
-});
-
-app.param('id', function (req, res, next, id) {
-	next();
 });
 
 app.get('/:id', function (req, res, next) {
@@ -47,8 +50,29 @@ app.get('/:id', function (req, res, next) {
 				info: info
 			});
 		} catch (error) {
-			return next(new Error('Error while loading ' + id));
+			return next(new Error('Error while loading ' + id + '. Please report this to me...'));
 		}
+	});
+});
+
+app.get('/:filename', function (req, res, next) {
+	var filename = req.params.filename[0];
+	var extension = req.params.filename[2];
+	var dataFile = __dirname + '/data' + path.join('/', filename);
+
+	fs.readFile(dataFile, function (error, data) {
+		if (error) {
+			var error = new Error('Not found');
+			error.status = 404;
+			return next(error);
+		}
+
+		// set content-type
+		if (extension === 'jpg' || extension === 'jpeg') res.set('Content-Type', 'image/jpeg');
+		else if (extension === 'png') res.set('Content-Type', 'image/png');
+		else res.set('Content-Type', 'application/octet-stream');
+
+		res.send(data);
 	});
 });
 
