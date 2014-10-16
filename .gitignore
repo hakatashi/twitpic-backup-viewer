@@ -76,3 +76,6 @@ $RECYCLE.BIN/
 
 # data
 data
+
+# CSS
+*.css
