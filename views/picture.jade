@@ -1,16 +1,19 @@
 doctype html
 html
 	head
-		title= info.message + ' - hakatashi\'s twitpic backup viewer'
+		title= info.message.substr(0, 60) + (info.message.length > 60 ? '...' : '') + ' - hakatashi\'s twitpic backup hosting'
 		link(rel='stylesheet', href='style.css', media='screen', charset='utf-8')
 	body
+		.banner
+			h1
+				a(href='./') hakatashi's twitpic backup hosting
 		.info
+			p= info.message
 			.user
 				p.userinfo
 					a(href='http://twitter.com/' + info.user.username, target='_blank')
 						| @#{info.user.username} (#{info.user.name})
 					|  uploaded on #{info.timestamp}
-			p= info.message
 		.workspace
 			.imagewrap
 				a(href=file, target='_blank').imagelink
